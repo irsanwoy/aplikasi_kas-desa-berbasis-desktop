@@ -1,14 +1,160 @@
 
 package form;
+import database.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+
 
 
 public class karyawan extends javax.swing.JFrame {
-
+    private DefaultTableModel model;
 
     public karyawan() {
         initComponents();
+        setLocationRelativeTo(this);
+        model = new DefaultTableModel();
+        tblKaryawan.setModel(model);
+        model.addColumn("ID");
+        model.addColumn("Nama");
+        model.addColumn("Jabatan");
+        model.addColumn("No. Telepon");
+        loadDataKaryawan();
+        
+    }
+    
+     private void loadDataKaryawan() {
+        try {
+            Connection connection = koneksi.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT id_karyawan, nama_karyawan, jabatan_karyawan, telepon_karyawan FROM Karyawan");
+
+            while (resultSet.next()) {
+                Object[] row = {
+                    resultSet.getString("id_karyawan"),
+                    resultSet.getString("nama_karyawan"),
+                    resultSet.getString("jabatan_karyawan"),
+                    resultSet.getString("telepon_karyawan")
+                };
+                model.addRow(row);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+     
+     private void updateDataKaryawan() {
+        String id_karyawan = tfId.getText();
+        String nama = tfNama.getText();
+        String jabatan = tfJabatan.getText();
+        String telepon = tfNo.getText();
+
+        try {
+            Connection connection = koneksi.getConnection();
+
+            String query = "UPDATE Karyawan SET nama_karyawan = ?, jabatan_karyawan = ?, telepon_karyawan = ? WHERE id_karyawan = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, nama);
+            preparedStatement.setString(2, jabatan);
+            preparedStatement.setString(3, telepon);
+            preparedStatement.setString(4, id_karyawan);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(null, "Data berhasil diubah");
+            }
+
+            preparedStatement.close();
+            connection.close();
+            model.setRowCount(0); // Membersihkan data yang ada
+            loadDataKaryawan(); // Memuat data yang baru
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+     
+     private void deleteDataKaryawan() {
+        try {
+            String sql = "DELETE FROM Karyawan WHERE id_karyawan='" + tfId.getText() + "'";
+
+            Connection con = koneksi.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.execute();
+            JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
+            model.setRowCount(0);
+            loadDataKaryawan();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Gagal menghapus data: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
+     
+     private void insertDataKaryawan() {
+        try {
+            String sql = "INSERT INTO Karyawan (nama_karyawan, jabatan_karyawan, telepon_karyawan) VALUES (?, ?, ?)";
+
+            Connection con = koneksi.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, tfNama.getText());
+            pst.setString(2, tfJabatan.getText());
+            pst.setString(3, tfNo.getText());
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Data berhasil disimpan");
+            model.setRowCount(0);
+            loadDataKaryawan();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+     
+     private void cariDataKaryawan() {
+    String searchText = tfCari.getText();
+    model.setRowCount(0); // Membersihkan data yang ada
+
+    try {
+        Connection connection = koneksi.getConnection();
+        String query = "SELECT * FROM Karyawan WHERE id_karyawan LIKE ? OR nama_karyawan LIKE ? OR jabatan_karyawan LIKE ? OR telepon_karyawan LIKE ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        String searchPattern = "%" + searchText + "%";
+        preparedStatement.setString(1, searchPattern);
+        preparedStatement.setString(2, searchPattern);
+        preparedStatement.setString(3, searchPattern);
+        preparedStatement.setString(4, searchPattern);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            Object[] row = {
+                resultSet.getString("id_karyawan"),
+                resultSet.getString("nama_karyawan"),
+                resultSet.getString("jabatan_karyawan"),
+                resultSet.getString("telepon_karyawan")
+            };
+            model.addRow(row);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -130,6 +276,11 @@ public class karyawan extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblKaryawan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblKaryawanMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblKaryawan);
 
         bTambah.setText("TAMBAH");
@@ -161,6 +312,11 @@ public class karyawan extends javax.swing.JFrame {
         });
 
         bCari.setText("CARI");
+        bCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bCariActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -286,19 +442,44 @@ public class karyawan extends javax.swing.JFrame {
 
     private void bTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bTambahActionPerformed
         // TODO add your handling code here:
+        insertDataKaryawan();
     }//GEN-LAST:event_bTambahActionPerformed
 
     private void bUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUbahActionPerformed
         // TODO add your handling code here:
+        updateDataKaryawan();
     }//GEN-LAST:event_bUbahActionPerformed
 
     private void bHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bHapusActionPerformed
         // TODO add your handling code here:
+        deleteDataKaryawan();
     }//GEN-LAST:event_bHapusActionPerformed
 
     private void bBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBatalActionPerformed
         // TODO add your handling code here:
+        tfId.setText("");
+        tfNama.setText("");
+        tfJabatan.setText("");
+        tfNo.setText("");
     }//GEN-LAST:event_bBatalActionPerformed
+
+    private void tblKaryawanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblKaryawanMouseClicked
+        // TODO add your handling code here:
+         int baris = tblKaryawan.rowAtPoint(evt.getPoint());
+        String id_karyawan = tblKaryawan.getValueAt(baris, 0).toString();
+        tfId.setText(id_karyawan);
+        String nama = tblKaryawan.getValueAt(baris, 1).toString();
+        tfNama.setText(nama);
+        String jabatan = tblKaryawan.getValueAt(baris, 2).toString();
+        tfJabatan.setText(jabatan);
+        String no = tblKaryawan.getValueAt(baris, 3).toString();
+        tfNo.setText(no);
+    }//GEN-LAST:event_tblKaryawanMouseClicked
+
+    private void bCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCariActionPerformed
+        // TODO add your handling code here:
+        cariDataKaryawan();
+    }//GEN-LAST:event_bCariActionPerformed
 
     /**
      * @param args the command line arguments

@@ -1,13 +1,201 @@
 
 package form;
-
+import database.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
 
 public class pengeluaran extends javax.swing.JFrame {
-
+private DefaultTableModel model;
 
     public pengeluaran() {
         initComponents();
+        setLocationRelativeTo(this);
+        model = new DefaultTableModel();
+        tblPengeluaran.setModel(model);
+        model.addColumn("ID");
+        model.addColumn("Tanggal");
+        model.addColumn("Kategori");
+        model.addColumn("Jumlah");
+        model.addColumn("Keterangan");
+        loadDataPengeluaran();
     }
+    
+    
+     private void loadDataPengeluaran() {
+        try {
+            Connection connection = koneksi.getConnection();
+            Statement statement = connection.createStatement();
+            String query = "SELECT p.id_pengeluaran, p.tanggal, k.nama_kategori, p.jumlah, p.keterangan "
+                         + "FROM Pengeluaran p "
+                         + "JOIN Kategori k ON p.id_kategori = k.id_kategori";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                Object[] row = {
+                    resultSet.getString("id_pengeluaran"),
+                    resultSet.getString("tanggal"),
+                    resultSet.getString("nama_kategori"),
+                    resultSet.getString("jumlah"),
+                    resultSet.getString("keterangan")
+                };
+                model.addRow(row);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    
+     private void insertDataPengeluaran() {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String tanggal = dateFormat.format(jdTanggal.getDate());
+            String kategori = jcKategori.getSelectedItem().toString();
+            String jumlah = tfJumlah.getText();
+            String keterangan = tfKeterangan.getText();
+
+            // Get id_kategori from the name
+            Connection connection = koneksi.getConnection();
+            String getCategoryIdQuery = "SELECT id_kategori FROM Kategori WHERE nama_kategori = ?";
+            PreparedStatement getCategoryIdStmt = connection.prepareStatement(getCategoryIdQuery);
+            getCategoryIdStmt.setString(1, kategori);
+            ResultSet rs = getCategoryIdStmt.executeQuery();
+            int id_kategori = 0;
+            if (rs.next()) {
+                id_kategori = rs.getInt("id_kategori");
+            }
+            rs.close();
+            getCategoryIdStmt.close();
+
+            String sql = "INSERT INTO Pengeluaran (tanggal, id_kategori, jumlah, keterangan) VALUES (?, ?, ?, ?)";
+            PreparedStatement pst = connection.prepareStatement(sql);
+            pst.setString(1, tanggal);
+            pst.setInt(2, id_kategori);
+            pst.setString(3, jumlah);
+            pst.setString(4, keterangan);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Data berhasil disimpan");
+            model.setRowCount(0);
+            loadDataPengeluaran();
+            connection.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+     
+      private void updateDataPengeluaran() {
+        String id_pengeluaran = tfId.getText();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggal = dateFormat.format(jdTanggal.getDate());
+        String kategori = jcKategori.getSelectedItem().toString();
+        String jumlah = tfJumlah.getText();
+        String keterangan = tfKeterangan.getText();
+
+        try {
+            Connection connection = koneksi.getConnection();
+
+            // Get id_kategori from the name
+            String getCategoryIdQuery = "SELECT id_kategori FROM Kategori WHERE nama_kategori = ?";
+            PreparedStatement getCategoryIdStmt = connection.prepareStatement(getCategoryIdQuery);
+            getCategoryIdStmt.setString(1, kategori);
+            ResultSet rs = getCategoryIdStmt.executeQuery();
+            int id_kategori = 0;
+            if (rs.next()) {
+                id_kategori = rs.getInt("id_kategori");
+            }
+            rs.close();
+            getCategoryIdStmt.close();
+
+            String query = "UPDATE Pengeluaran SET tanggal = ?, id_kategori = ?, jumlah = ?, keterangan = ? WHERE id_pengeluaran = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, tanggal);
+            preparedStatement.setInt(2, id_kategori);
+            preparedStatement.setString(3, jumlah);
+            preparedStatement.setString(4, keterangan);
+            preparedStatement.setString(5, id_pengeluaran);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(null, "Data berhasil diubah");
+            }
+
+            preparedStatement.close();
+            connection.close();
+            model.setRowCount(0);
+            loadDataPengeluaran();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+     
+       private void deleteDataPengeluaran() {
+        try {
+            String sql = "DELETE FROM Pengeluaran WHERE id_pengeluaran='" + tfId.getText() + "'";
+
+            Connection con = koneksi.getConnection();
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.execute();
+            JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
+            model.setRowCount(0);
+            loadDataPengeluaran();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Gagal menghapus data: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+      
+        private void cariDataPengeluaran() {
+        String searchText = tfCari.getText();
+        model.setRowCount(0);
+
+        try {
+            Connection connection = koneksi.getConnection();
+            String query = "SELECT p.id_pengeluaran, p.tanggal, k.nama_kategori, p.jumlah, p.keterangan "
+                         + "FROM Pengeluaran p "
+                         + "JOIN Kategori k ON p.id_kategori = k.id_kategori "
+                         + "WHERE p.id_pengeluaran LIKE ? OR p.tanggal LIKE ? OR k.nama_kategori LIKE ? OR p.jumlah LIKE ? OR p.keterangan LIKE ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String searchPattern = "%" + searchText + "%";
+            preparedStatement.setString(1, searchPattern);
+            preparedStatement.setString(2, searchPattern);
+            preparedStatement.setString(3, searchPattern);
+            preparedStatement.setString(4, searchPattern);
+            preparedStatement.setString(5, searchPattern);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Object[] row = {
+                    resultSet.getString("id_pengeluaran"),
+                    resultSet.getString("tanggal"),
+                    resultSet.getString("nama_kategori"),
+                    resultSet.getString("jumlah"),
+                    resultSet.getString("keterangan")
+                };
+                model.addRow(row);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    
 
 
     @SuppressWarnings("unchecked")
@@ -31,7 +219,7 @@ public class pengeluaran extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         tfKeterangan = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblPemasukan = new javax.swing.JTable();
+        tblPengeluaran = new javax.swing.JTable();
         bTambah = new javax.swing.JButton();
         bUbah = new javax.swing.JButton();
         bHapus = new javax.swing.JButton();
@@ -40,6 +228,8 @@ public class pengeluaran extends javax.swing.JFrame {
         bCari = new javax.swing.JButton();
         jdTanggal = new com.toedter.calendar.JDateChooser();
         jcKategori = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        tfId = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -119,7 +309,7 @@ public class pengeluaran extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         jLabel6.setText("KETERANGAN");
 
-        tblPemasukan.setModel(new javax.swing.table.DefaultTableModel(
+        tblPengeluaran.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -130,7 +320,12 @@ public class pengeluaran extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(tblPemasukan);
+        tblPengeluaran.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPengeluaranMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblPengeluaran);
 
         bTambah.setText("TAMBAH");
         bTambah.addActionListener(new java.awt.event.ActionListener() {
@@ -161,8 +356,16 @@ public class pengeluaran extends javax.swing.JFrame {
         });
 
         bCari.setText("CARI");
+        bCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bCariActionPerformed(evt);
+            }
+        });
 
         jcKategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "operasional", "gaji karyawan", "perbaikan infrastruktur", "pembelian barang", "lainnya" }));
+
+        jLabel7.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jLabel7.setText("ID PENGELUARAN");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -211,7 +414,11 @@ public class pengeluaran extends javax.swing.JFrame {
                                                 .addGap(26, 26, 26)))
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(jdTanggal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jcKategori, 0, 154, Short.MAX_VALUE))))))
+                                            .addComponent(jcKategori, 0, 154, Short.MAX_VALUE)))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(0, 228, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -220,7 +427,11 @@ public class pengeluaran extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addComponent(jLabel2)
-                .addGap(57, 57, 57)
+                .addGap(21, 21, 21)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jdTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -287,19 +498,54 @@ public class pengeluaran extends javax.swing.JFrame {
 
     private void bTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bTambahActionPerformed
         // TODO add your handling code here:
+        insertDataPengeluaran();
     }//GEN-LAST:event_bTambahActionPerformed
 
     private void bUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bUbahActionPerformed
         // TODO add your handling code here:
+        updateDataPengeluaran();
     }//GEN-LAST:event_bUbahActionPerformed
 
     private void bHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bHapusActionPerformed
         // TODO add your handling code here:
+        deleteDataPengeluaran();
     }//GEN-LAST:event_bHapusActionPerformed
 
     private void bBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBatalActionPerformed
         // TODO add your handling code here:
+        // Membersihkan semua field input
+    tfId.setText("");
+    jdTanggal.setDate(null);
+    jcKategori.setSelectedIndex(0);
+    tfJumlah.setText("");
+    tfKeterangan.setText("");
+    tfCari.setText("");
     }//GEN-LAST:event_bBatalActionPerformed
+
+    private void tblPengeluaranMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPengeluaranMouseClicked
+        // TODO add your handling code here:
+        int baris = tblPengeluaran.rowAtPoint(evt.getPoint());
+    String id_pengeluaran = tblPengeluaran.getValueAt(baris, 0).toString();
+    tfId.setText(id_pengeluaran);
+    String tanggal = tblPengeluaran.getValueAt(baris, 1).toString();
+    try {
+        java.util.Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        jdTanggal.setDate(date);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    String kategori = tblPengeluaran.getValueAt(baris, 2).toString();
+    jcKategori.setSelectedItem(kategori);
+    String jumlah = tblPengeluaran.getValueAt(baris, 3).toString();
+    tfJumlah.setText(jumlah);
+    String keterangan = tblPengeluaran.getValueAt(baris, 4).toString();
+    tfKeterangan.setText(keterangan);
+    }//GEN-LAST:event_tblPengeluaranMouseClicked
+
+    private void bCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCariActionPerformed
+        // TODO add your handling code here:
+        cariDataPengeluaran();
+    }//GEN-LAST:event_bCariActionPerformed
 
     /**
      * @param args the command line arguments
@@ -369,13 +615,15 @@ public class pengeluaran extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> jcKategori;
     private com.toedter.calendar.JDateChooser jdTanggal;
-    private javax.swing.JTable tblPemasukan;
+    private javax.swing.JTable tblPengeluaran;
     private javax.swing.JTextField tfCari;
+    private javax.swing.JTextField tfId;
     private javax.swing.JTextField tfJumlah;
     private javax.swing.JTextField tfKeterangan;
     // End of variables declaration//GEN-END:variables

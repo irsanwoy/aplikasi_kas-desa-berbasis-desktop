@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class koneksi {
-     private static final String URL = "jdbc:mysql://localhost:3306/db_kas";
+     private static final String URL = "jdbc:mysql://localhost:3306/kas2";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "";
 
