@@ -4,17 +4,50 @@
  */
 package form;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import form.login;
 /**
  *
  * @author USER
  */
 public class main extends javax.swing.JFrame {
-
+private String userRole;
     /**
      * Creates new form main
      */
-    public main() {
+
+    
+    
+    public main(String userRole) {
+        this.userRole = userRole;
         initComponents();
+        setRoleBasedComponents();
+        setupMenu();
+    }
+    
+       private void setRoleBasedComponents() {
+        if ("admin".equals(userRole)) {
+            // Tambahkan komponen dan fitur untuk admin
+            add(new JLabel("Welcome Admin!"));
+        } else if ("kades".equals(userRole)) {
+            // Tambahkan komponen untuk melihat laporan saja
+            add(new JLabel("Welcome Kades! You can only view reports."));
+        }
+    }
+       
+       private void setupMenu() {
+        if ("admin".equals(userRole)) {
+            KARYAWAN.setEnabled(true);
+            LAPORAN.setEnabled(true);
+            PEMASUKAN.setEnabled(true);
+            PENGELUARAN.setEnabled(true);
+        } else if ("kades".equals(userRole)) {
+           KARYAWAN.setEnabled(false);
+            LAPORAN.setEnabled(true);
+            PEMASUKAN.setEnabled(false);
+            PENGELUARAN.setEnabled(false);
+        }
     }
 
     /**
@@ -29,11 +62,11 @@ public class main extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        KARYAWAN = new javax.swing.JButton();
+        PEMASUKAN = new javax.swing.JButton();
+        PENGELUARAN = new javax.swing.JButton();
+        LAPORAN = new javax.swing.JButton();
+        LOGOUT = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -43,20 +76,45 @@ public class main extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel1.setText("MENU");
 
-        jButton1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jButton1.setText("DATA KARYAWAN");
+        KARYAWAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        KARYAWAN.setText("DATA KARYAWAN");
+        KARYAWAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                KARYAWANActionPerformed(evt);
+            }
+        });
 
-        jButton2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jButton2.setText("PEMASUKAN");
+        PEMASUKAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        PEMASUKAN.setText("PEMASUKAN");
+        PEMASUKAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PEMASUKANActionPerformed(evt);
+            }
+        });
 
-        jButton3.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jButton3.setText("PENGELUARAN");
+        PENGELUARAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        PENGELUARAN.setText("PENGELUARAN");
+        PENGELUARAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PENGELUARANActionPerformed(evt);
+            }
+        });
 
-        jButton4.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jButton4.setText("LAPORAN");
+        LAPORAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        LAPORAN.setText("LAPORAN");
+        LAPORAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LAPORANActionPerformed(evt);
+            }
+        });
 
-        jButton5.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jButton5.setText("LOGOUT");
+        LOGOUT.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        LOGOUT.setText("LOGOUT");
+        LOGOUT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LOGOUTActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -70,12 +128,12 @@ public class main extends javax.swing.JFrame {
                         .addGap(66, 66, 66))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(LAPORAN, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(PENGELUARAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(PEMASUKAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(KARYAWAN, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(LOGOUT, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(27, 27, 27))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -84,15 +142,15 @@ public class main extends javax.swing.JFrame {
                 .addGap(55, 55, 55)
                 .addComponent(jLabel1)
                 .addGap(30, 30, 30)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(KARYAWAN, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PEMASUKAN, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PENGELUARAN, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(LAPORAN, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(LOGOUT, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(121, Short.MAX_VALUE))
         );
 
@@ -128,6 +186,40 @@ public class main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void KARYAWANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_KARYAWANActionPerformed
+        karyawan karyawan = new karyawan();
+        karyawan.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_KARYAWANActionPerformed
+
+    private void PEMASUKANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PEMASUKANActionPerformed
+        // TODO add your handling code here:
+        pemasukan pemasukan = new pemasukan();
+        pemasukan.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_PEMASUKANActionPerformed
+
+    private void PENGELUARANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PENGELUARANActionPerformed
+        // TODO add your handling code here:
+        pengeluaran pengeluaran = new pengeluaran();
+        pengeluaran.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_PENGELUARANActionPerformed
+
+    private void LAPORANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LAPORANActionPerformed
+        // TODO add your handling code here:
+        laporan laporan = new laporan();
+        laporan.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_LAPORANActionPerformed
+
+    private void LOGOUTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LOGOUTActionPerformed
+        // TODO add your handling code here:
+        login login = new login();
+        login.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_LOGOUTActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -158,17 +250,17 @@ public class main extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new main().setVisible(true);
+               new main("admin").setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
+    private javax.swing.JButton KARYAWAN;
+    private javax.swing.JButton LAPORAN;
+    private javax.swing.JButton LOGOUT;
+    private javax.swing.JButton PEMASUKAN;
+    private javax.swing.JButton PENGELUARAN;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;

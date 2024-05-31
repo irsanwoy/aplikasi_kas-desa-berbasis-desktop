@@ -241,15 +241,35 @@ private DefaultTableModel model;
 
         DATA_KARYAWAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         DATA_KARYAWAN.setText("DATA KARYAWAN");
+        DATA_KARYAWAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DATA_KARYAWANActionPerformed(evt);
+            }
+        });
 
         PEMASUKAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         PEMASUKAN.setText("PEMASUKAN");
+        PEMASUKAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PEMASUKANActionPerformed(evt);
+            }
+        });
 
         PENGELUARAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         PENGELUARAN.setText("PENGELUARAN");
+        PENGELUARAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PENGELUARANActionPerformed(evt);
+            }
+        });
 
         LAPORAN.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         LAPORAN.setText("LAPORAN");
+        LAPORAN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LAPORANActionPerformed(evt);
+            }
+        });
 
         LOGOUT.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         LOGOUT.setText("LOGOUT");
@@ -546,6 +566,34 @@ private DefaultTableModel model;
         // TODO add your handling code here:
         cariDataPengeluaran();
     }//GEN-LAST:event_bCariActionPerformed
+
+    private void DATA_KARYAWANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DATA_KARYAWANActionPerformed
+        // TODO add your handling code here:
+         karyawan karyawan = new karyawan();
+        karyawan.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_DATA_KARYAWANActionPerformed
+
+    private void PEMASUKANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PEMASUKANActionPerformed
+        // TODO add your handling code here:
+         pemasukan pemasukan = new pemasukan();
+        pemasukan.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_PEMASUKANActionPerformed
+
+    private void PENGELUARANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PENGELUARANActionPerformed
+        // TODO add your handling code here:
+        pengeluaran pengeluaran = new pengeluaran();
+        pengeluaran.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_PENGELUARANActionPerformed
+
+    private void LAPORANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LAPORANActionPerformed
+        // TODO add your handling code here:
+         laporan laporan = new laporan();
+        laporan.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_LAPORANActionPerformed
 
     /**
      * @param args the command line arguments

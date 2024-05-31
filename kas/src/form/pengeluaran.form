@@ -128,6 +128,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="DATA KARYAWAN"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DATA_KARYAWANActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="PEMASUKAN">
               <Properties>
@@ -136,6 +139,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="PEMASUKAN"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PEMASUKANActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="PENGELUARAN">
               <Properties>
@@ -144,6 +150,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="PENGELUARAN"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PENGELUARANActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="LAPORAN">
               <Properties>
@@ -152,6 +161,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="LAPORAN"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LAPORANActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="LOGOUT">
               <Properties>
